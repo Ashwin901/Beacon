@@ -1,5 +1,6 @@
+import 'package:beacon/widgets/get_key.dart';
 import 'package:flutter/material.dart';
-import 'package:beacon/widgets/location_button.dart';
+import 'package:beacon/widgets/general_button.dart';
 import 'package:beacon/screens/maps_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -8,6 +9,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  bool check = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +29,7 @@ class _MainScreenState extends State<MainScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                LocationButton(
+                GeneralButton(
                   label: "Share Location",
                   onPressed: () {
                     Navigator.push(
@@ -39,8 +42,18 @@ class _MainScreenState extends State<MainScreen> {
                     );
                   },
                 ),
-                LocationButton(
+                GeneralButton(
                   label: "Get Location",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return GetKey();
+                        },
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class LocationButton extends StatelessWidget {
+class GeneralButton extends StatelessWidget {
   final String label;
   final onPressed;
-  const LocationButton({this.label, this.onPressed});
+  const GeneralButton({this.label, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
