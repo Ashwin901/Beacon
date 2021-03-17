@@ -1,4 +1,5 @@
 import 'package:beacon/widgets/general_button.dart';
+import 'package:beacon/widgets/get_location.dart';
 import 'package:flutter/material.dart';
 import 'package:beacon/services.dart';
 
@@ -26,7 +27,14 @@ class _GetKeyState extends State<GetKey> {
       if (loc == null) {
         print("Invalid key. Location no found");
       } else {
-        print(loc['lat']);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return GetLocation(value: key);
+            },
+          ),
+        );
       }
     } else {
       print("Please enter the key");
