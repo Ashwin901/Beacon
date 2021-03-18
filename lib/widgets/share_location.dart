@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:beacon/widgets/general_button.dart';
 import 'package:flutter/material.dart';
 import 'package:beacon/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -28,7 +29,9 @@ class _ShareLocationState extends State<ShareLocation> {
 
   void deleteLoc(BuildContext context) async {
     await deleteLocation(docId);
-    Navigator.pop(context);
+    var nav = Navigator.of(context);
+    nav.pop();
+    nav.pop();
   }
 
   void setDocId(String key) {
@@ -43,32 +46,85 @@ class _ShareLocationState extends State<ShareLocation> {
 
   @override
   Widget build(BuildContext context) {
-    Timer(Duration(hours: 3), () {
+    Timer(Duration(minutes: 20), () {
       deleteLoc(context);
     });
-    return FutureBuilder(
-      future: getLocation(),
-      builder: (context, loc) {
-        if (loc.hasData) {
-          setDocId(loc.data["key"]);
-          return GoogleMap(
-            mapType: MapType.normal,
-            initialCameraPosition: CameraPosition(
-                target: LatLng(loc.data["locationData"].latitude,
-                    loc.data["locationData"].longitude),
-                zoom: 14),
-            onMapCreated: _onMapCreated,
-            myLocationButtonEnabled: true,
-            myLocationEnabled: true,
-            zoomControlsEnabled: true,
-          );
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+    return WillPopScope(
+        child: FutureBuilder(
+          future: getLocation(),
+          builder: (context, loc) {
+            if (loc.hasData) {
+              setDocId(loc.data["key"]);
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  GoogleMap(
+                    mapType: MapType.normal,
+                    initialCameraPosition: CameraPosition(
+                        target: LatLng(loc.data["locationData"].latitude,
+                            loc.data["locationData"].longitude),
+                        zoom: 14),
+                    onMapCreated: _onMapCreated,
+                    myLocationButtonEnabled: true,
+                    myLocationEnabled: true,
+                    zoomControlsEnabled: true,
+                  ),
+                  Positioned(
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.black),
+                      height: 50,
+                      width: 200,
+                      child: Text(
+                        "Key: $docId",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    bottom: 10,
+                  )
+                ],
+              );
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
+        onWillPop: () {
+          return _onWillPop(context);
+        });
+  }
+
+  Future<bool> _onWillPop(BuildContext context) {
+    return showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+              'Are you sure?',
+            ),
+            content: Text(
+              'Do you want to stop sharing your location?',
+            ),
+            actions: <Widget>[
+              GeneralButton(
+                label: "No",
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              GeneralButton(
+                label: "Yes",
+                onPressed: () {
+                  deleteLoc(context);
+                },
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 
   @override
