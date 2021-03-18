@@ -77,7 +77,7 @@ class _GetLocationState extends State<GetLocation> {
             return GoogleMap(
               mapType: MapType.normal,
               initialCameraPosition:
-                  CameraPosition(target: LatLng(latitude, longitude), zoom: 20),
+                  CameraPosition(target: LatLng(latitude, longitude), zoom: 14),
               onMapCreated: _onMapCreated,
               markers: _markers,
             );

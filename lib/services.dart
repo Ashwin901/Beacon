@@ -28,20 +28,31 @@ Future getLocation() async {
     }
   }
   _locationData = await _location.getLocation();
-  await addLocation();
-  return _locationData;
+  String docId = await addLocation();
+  Map locationInfo = {"locationData": _locationData, "key": docId};
+  return locationInfo;
 }
 
-Future<void> addLocation() async {
-  try {
-    await firebaseFirestore.collection('locations').doc('123abc').set({
-      "key": "123abc",
-      "lat": _locationData.latitude,
-      "long": _locationData.longitude
-    });
-  } catch (e) {
-    print(e.message);
+Future<String> addLocation() async {
+  int counter = await getCounter();
+  String docId = "";
+  if (counter != null) {
+    docId = 'abc$counter';
+    try {
+      await firebaseFirestore.collection('locations').doc(docId).set({
+        "key": 'abc$counter',
+        "lat": _locationData.latitude,
+        "long": _locationData.longitude
+      });
+      counter++;
+      await setCounter(counter);
+    } catch (e) {
+      print(e.message);
+    }
+  } else {
+    print("Counter error");
   }
+  return docId;
 }
 
 Future findKey(String key) async {
@@ -56,11 +67,41 @@ Future findKey(String key) async {
   return data;
 }
 
-Future<void> updateLiveLocation(LocationData data) async {
+Future<int> getCounter() async {
+  int counter = 0;
+  dynamic data;
+  try {
+    await firebaseFirestore.collection('counter').doc('count').get().then(
+          (value) => {
+            if (value.exists)
+              {data = value.data(), counter = data["counterValue"]}
+            else
+              {
+                counter = null,
+              }
+          },
+        );
+  } catch (e) {
+    print(e.message);
+  }
+  return counter;
+}
+
+Future<void> setCounter(int counter) async {
+  try {
+    await firebaseFirestore.collection('counter').doc('count').update(
+      {"counterValue": counter},
+    );
+  } catch (e) {
+    print(e.message);
+  }
+}
+
+Future<void> updateLiveLocation(LocationData data, String key) async {
   try {
     await firebaseFirestore
         .collection('locations')
-        .doc('123abc')
+        .doc(key)
         .update({"lat": data.latitude, "long": data.longitude});
   } catch (e) {
     print(e.message);
@@ -69,7 +110,7 @@ Future<void> updateLiveLocation(LocationData data) async {
 
 Future<void> deleteLocation(String key) async {
   try {
-    await firebaseFirestore.collection('locations').doc('123abc').delete();
+    await firebaseFirestore.collection('locations').doc(key).delete();
   } catch (e) {
     print(e.message);
   }
