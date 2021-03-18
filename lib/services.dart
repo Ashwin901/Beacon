@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:location/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:toast/toast.dart';
 
 Location _location = new Location();
 bool _serviceEnabled;
@@ -71,4 +73,8 @@ Future<void> deleteLocation(String key) async {
   } catch (e) {
     print(e.message);
   }
+}
+
+void showToast(BuildContext context, String message) {
+  Toast.show(message, context, duration: 5, gravity: Toast.BOTTOM);
 }

@@ -25,13 +25,8 @@ class _GetKeyState extends State<GetKey> {
         loading = !loading;
       });
       if (loc == null) {
-        print("Invalid key. Location no found");
-        Scaffold.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Invalid key. Please try again"),
-            duration: Duration(seconds: 5),
-          ),
-        );
+        print("Invalid key. Location not found");
+        showToast(context, "Invalid key. Please try again");
       } else {
         Navigator.push(
           context,
@@ -44,6 +39,7 @@ class _GetKeyState extends State<GetKey> {
       }
     } else {
       print("Please enter the key");
+      showToast(context, "Please enter the key");
     }
   }
 
@@ -72,7 +68,12 @@ class _GetKeyState extends State<GetKey> {
                       ),
                     ),
                   ),
-                  GeneralButton(label: "Submit", onPressed: onPressed)
+                  GeneralButton(
+                    label: "Submit",
+                    onPressed: () {
+                      onPressed(context);
+                    },
+                  ),
                 ],
               ),
             ),
