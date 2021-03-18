@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:beacon/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -19,8 +21,13 @@ class _ShareLocationState extends State<ShareLocation> {
           CameraPosition(target: LatLng(loc.latitude, loc.longitude), zoom: 20),
         ),
       );
-      // await updateLiveLocation(loc);
+      await updateLiveLocation(loc);
     });
+  }
+
+  void deleteLoc(BuildContext context) async {
+    await deleteLocation("");
+    Navigator.pop(context);
   }
 
   @override
@@ -31,6 +38,10 @@ class _ShareLocationState extends State<ShareLocation> {
 
   @override
   Widget build(BuildContext context) {
+    Timer(Duration(hours: 3), () {
+      print("Yeah, this line is printed after 3 seconds");
+      deleteLoc(context);
+    });
     return FutureBuilder(
       future: getLocation(),
       builder: (context, loc) {
@@ -52,5 +63,11 @@ class _ShareLocationState extends State<ShareLocation> {
         }
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

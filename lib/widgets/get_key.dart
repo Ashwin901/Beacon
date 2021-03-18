@@ -13,7 +13,7 @@ class _GetKeyState extends State<GetKey> {
   dynamic loc = {};
   bool loading = false;
 
-  void onPressed() async {
+  void onPressed(BuildContext context) async {
     if (key.length > 0) {
       setState(() {
         loading = !loading;
@@ -26,6 +26,12 @@ class _GetKeyState extends State<GetKey> {
       });
       if (loc == null) {
         print("Invalid key. Location no found");
+        Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Invalid key. Please try again"),
+            duration: Duration(seconds: 5),
+          ),
+        );
       } else {
         Navigator.push(
           context,

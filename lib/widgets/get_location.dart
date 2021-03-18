@@ -32,21 +32,23 @@ class _GetLocationState extends State<GetLocation> {
         data["long"],
       ),
     );
-
     locData.snapshots().listen((loc) {
-      _controller.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-              target: LatLng(loc.data()["lat"], loc.data()["long"]), zoom: 20),
-        ),
-      );
-      //When location changes we have to update the markers also
-      _addMarkers(
-        LatLng(
-          loc.data()["lat"],
-          loc.data()["long"],
-        ),
-      );
+      if (loc.exists) {
+        _controller.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+                target: LatLng(loc.data()["lat"], loc.data()["long"]),
+                zoom: 20),
+          ),
+        );
+        //When location changes we have to update the markers also
+        _addMarkers(
+          LatLng(
+            loc.data()["lat"],
+            loc.data()["long"],
+          ),
+        );
+      }
     });
   }
 
@@ -83,5 +85,11 @@ class _GetLocationState extends State<GetLocation> {
             return Center(child: CircularProgressIndicator());
           }
         });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

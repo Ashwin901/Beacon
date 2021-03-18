@@ -64,3 +64,11 @@ Future<void> updateLiveLocation(LocationData data) async {
     print(e.message);
   }
 }
+
+Future<void> deleteLocation(String key) async {
+  try {
+    await firebaseFirestore.collection('locations').doc('123abc').delete();
+  } catch (e) {
+    print(e.message);
+  }
+}
