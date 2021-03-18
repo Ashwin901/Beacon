@@ -1,3 +1,4 @@
+import 'package:beacon/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,6 +14,8 @@ class GetLocation extends StatefulWidget {
 class _GetLocationState extends State<GetLocation> {
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   GoogleMapController _controller;
+  Set<Marker> _markers = Set<Marker>();
+  int counter = 0;
   double latitude, longitude;
   Location location = Location();
 
@@ -21,12 +24,39 @@ class _GetLocationState extends State<GetLocation> {
     DocumentReference locData =
         firebaseFirestore.collection('locations').doc(widget.value);
 
+    //Add initial marker
+    var data = await findKey(widget.value);
+    _addMarkers(
+      LatLng(
+        data["lat"],
+        data["long"],
+      ),
+    );
+
     locData.snapshots().listen((loc) {
       _controller.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
               target: LatLng(loc.data()["lat"], loc.data()["long"]), zoom: 20),
         ),
+      );
+      //When location changes we have to update the markers also
+      _addMarkers(
+        LatLng(
+          loc.data()["lat"],
+          loc.data()["long"],
+        ),
+      );
+    });
+  }
+
+  void _addMarkers(LatLng point) {
+    _markers.clear();
+    final String markerId = "markerId_$counter";
+    counter++;
+    setState(() {
+      _markers.add(
+        Marker(markerId: MarkerId(markerId), position: point),
       );
     });
   }
@@ -43,10 +73,12 @@ class _GetLocationState extends State<GetLocation> {
             latitude = loc.data["lat"];
             longitude = loc.data["long"];
             return GoogleMap(
-                mapType: MapType.hybrid,
-                initialCameraPosition: CameraPosition(
-                    target: LatLng(latitude, longitude), zoom: 20),
-                onMapCreated: _onMapCreated);
+              mapType: MapType.normal,
+              initialCameraPosition:
+                  CameraPosition(target: LatLng(latitude, longitude), zoom: 20),
+              onMapCreated: _onMapCreated,
+              markers: _markers,
+            );
           } else {
             return Center(child: CircularProgressIndicator());
           }

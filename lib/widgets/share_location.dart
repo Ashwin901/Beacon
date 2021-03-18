@@ -19,7 +19,7 @@ class _ShareLocationState extends State<ShareLocation> {
           CameraPosition(target: LatLng(loc.latitude, loc.longitude), zoom: 20),
         ),
       );
-      await updateLiveLocation(loc);
+      // await updateLiveLocation(loc);
     });
   }
 
@@ -36,7 +36,7 @@ class _ShareLocationState extends State<ShareLocation> {
       builder: (context, loc) {
         if (loc.hasData) {
           return GoogleMap(
-            mapType: MapType.hybrid,
+            mapType: MapType.normal,
             initialCameraPosition: CameraPosition(
                 target: LatLng(loc.data.latitude, loc.data.longitude),
                 zoom: 19.151926040649414),
